@@ -1,16 +1,12 @@
-export interface Env {
-  AI: Ai;
-}
-
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
+  async fetch(request, env) {
     const url = new URL(request.url);
     
     // Handle POST requests (image generation)
     if (request.method === 'POST') {
       try {
         const formData = await request.formData();
-        const prompt = formData.get('prompt') as string;
+        const prompt = formData.get('prompt');
         
         if (!prompt || prompt.trim() === '') {
           return new Response(JSON.stringify({ error: 'Please provide a prompt' }), {
@@ -252,6 +248,10 @@ export default {
             h1 {
                 font-size: 2em;
             }
+
+            .dropdown-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -451,15 +451,15 @@ export default {
             if (basePrompt) {
                 const promptParts = [];
                 
-                if (photoStyle) promptParts.push(`${photoStyle} photo`);
-                if (basePrompt) promptParts.push(`of ${basePrompt}`);
+                if (photoStyle) promptParts.push(photoStyle + ' photo');
+                if (basePrompt) promptParts.push('of ' + basePrompt);
                 if (additionalDetails) promptParts.push(additionalDetails);
                 if (framing) promptParts.push(framing);
-                if (setting) promptParts.push(`in ${setting}`);
-                if (lighting) promptParts.push(`with ${lighting}`);
-                if (cameraAngle) promptParts.push(`${cameraAngle} shot`);
-                if (camera) promptParts.push(`shot with ${camera}`);
-                if (photographer) promptParts.push(`in the style of ${photographer}`);
+                if (setting) promptParts.push('in ' + setting);
+                if (lighting) promptParts.push('with ' + lighting);
+                if (cameraAngle) promptParts.push(cameraAngle + ' shot');
+                if (camera) promptParts.push('shot with ' + camera);
+                if (photographer) promptParts.push('in the style of ' + photographer);
 
                 fullPrompt = promptParts.join(', ');
             }
@@ -470,7 +470,7 @@ export default {
 
         // Add event listeners to all form elements
         const formElements = ['prompt', 'photoStyle', 'framing', 'lighting', 'cameraAngle', 'camera', 'photographer', 'setting', 'additionalDetails'];
-        formElements.forEach(id => {
+        formElements.forEach(function(id) {
             const element = document.getElementById(id);
             if (element) {
                 element.addEventListener('input', updatePromptPreview);
@@ -509,8 +509,8 @@ export default {
                 });
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({}));
-                    throw new Error(errorData.error || \`HTTP error! status: \${response.status}\`);
+                    const errorData = await response.json().catch(function() { return {}; });
+                    throw new Error(errorData.error || 'HTTP error! status: ' + response.status);
                 }
 
                 const imageBlob = await response.blob();
@@ -522,7 +522,7 @@ export default {
                 
                 generatedImage.src = imageUrl;
                 downloadLink.href = imageUrl;
-                downloadLink.download = \`ai-generated-\${Date.now()}.png\`;
+                downloadLink.download = 'ai-generated-' + Date.now() + '.png';
                 
                 result.style.display = 'block';
                 
